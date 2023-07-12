@@ -1,0 +1,6 @@
+board:
+  name: arduino_plin
+  full_name: Arduino Plin
+  vendor: arduino
+  socs:
+    - name: mimxrt1176
