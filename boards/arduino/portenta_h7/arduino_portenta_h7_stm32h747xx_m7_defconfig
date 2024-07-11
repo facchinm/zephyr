@@ -38,3 +38,6 @@ CONFIG_REGULATOR_FIXED=y
 
 # Enable USB Stack
 CONFIG_USB_DEVICE_STACK=y
+
+# Enable i2c driver
+CONFIG_I2C=y
