@@ -87,6 +87,38 @@
 
 &i2c1 {
 	status = "okay";
+
+	pf1550: pmic@8 {
+		reg = <0x8>;
+		regulators {
+			compatible = "nxp,pf1550-regulator";
+			pf1550_sw1: BUCK1 {
+				regulator-init-microvolt = <3000000>;
+				regulator-boot-on;
+			};
+			pf1550_sw2: BUCK2 {
+				regulator-init-microvolt = <3300000>;
+				regulator-boot-on;
+			};
+			pf1550_sw3: BUCK3 {
+				regulator-init-microvolt = <3300000>;
+				regulator-init-microamp = <2000000>;
+				regulator-boot-on;
+			};
+			pf1550_ldo1: LDO1 {
+				regulator-init-microvolt = <1000000>;
+				regulator-boot-on;
+			};
+			pf1550_ldo2: LDO2 {
+				regulator-init-microvolt = <1800000>;
+				regulator-boot-on;
+			};
+			pf1550_ldo3: LDO3 {
+				regulator-init-microvolt = <1200000>;
+				regulator-boot-on;
+			};
+		};
+	};
 };
 
 /* Only one should be enabled */
