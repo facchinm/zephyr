@@ -89,7 +89,10 @@
 	status = "okay";
 
 	pf1550: pmic@8 {
+		status = "okay";
 		reg = <0x8>;
+		compatible = "nxp,pf1550";
+
 		regulators {
 			compatible = "nxp,pf1550-regulator";
 			pf1550_sw1: BUCK1 {
