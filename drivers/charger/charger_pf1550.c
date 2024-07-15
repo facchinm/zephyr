@@ -359,8 +359,8 @@ static int pf1550_init_properties(const struct device *dev)
 
 	static struct charger_pf1550_led_config led_config = {
 		.enabled = true,
-		.manual = true,
-		.duty = 100,
+		.manual = false,
+		.duty = 10,
 		.frequency = LED_FREQUENCY_1_HZ,
 		.behaviour = ON_CHARGING_FLASH_FAULT_OFF_DONE,
 	};
@@ -510,7 +510,7 @@ static int pf1550_enable_interrupt_pin(const struct device *dev, bool enabled)
 	gpio_flags_t flags;
 	int ret;
 
-	flags = enabled ? GPIO_INT_LEVEL_ACTIVE : GPIO_INT_DISABLE;
+	flags = enabled ? GPIO_INT_EDGE_TO_ACTIVE : GPIO_INT_DISABLE;
 
 	ret = gpio_pin_interrupt_configure_dt(&config->int_gpio, flags);
 	if (ret < 0) {
@@ -651,6 +651,12 @@ static int pf1550_init(const struct device *dev)
 		return ret;
 	}
 
+	ret = pf1550_update_properties(dev);
+	if (ret < 0) {
+		LOG_ERR("Failed to setup charger");
+		return ret;
+	}
+
 	return 0;
 }
 
@@ -678,6 +684,7 @@ static const struct charger_driver_api pf1550_driver_api = {
 		.vbus_ilim_ua = DT_INST_PROP(inst, vbus_current_limit_microamp),\
 		.vsys_min_uv = DT_INST_PROP(inst, system_voltage_min_threshold_microvolt),	\
 		.therm_mon_mode = DT_INST_PROP(inst, thermistor_monitoring_mode),		\
+		.battery_charge_termination_uv = DT_INST_PROP(inst, battery_termination_microvolt),		\
 	};											\
 												\
 	DEVICE_DT_INST_DEFINE(inst, &pf1550_init, NULL, &charger_pf1550_data_##inst,	\

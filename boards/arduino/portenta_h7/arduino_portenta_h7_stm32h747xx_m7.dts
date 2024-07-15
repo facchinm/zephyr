@@ -93,7 +93,7 @@
 		reg = <0x8>;
 		compatible = "nxp,pf1550";
 
-		regulators {
+		pmic_regulators: regulators {
 			status = "okay";
 			compatible = "nxp,pf1550-regulator";
 			pf1550_sw1: BUCK1 {
@@ -123,14 +123,15 @@
 			};
 		};
 
-		charger {
+		pmic_charger: charger {
 			status = "okay";
 			compatible = "nxp,pf1550-charger";
 			constant-charge-current-max-microamp = <100000>;
 			vbus-current-limit-microamp = <1500000>;
 			system-voltage-min-threshold-microvolt = <3500000>;
+			battery-termination-microvolt = <4200000>;
 			thermistor-monitoring-mode = "thermistor";
-			int-gpios = <&gpiok 0 GPIO_ACTIVE_LOW>;
+			int-gpios = <&gpiok 0 0>;
 		};
 	};
 };

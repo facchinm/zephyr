@@ -16,6 +16,10 @@ properties:
     type: int
     required: true
 
+  battery-termination-microvolt:
+    type: int
+    required: true
+
   system-voltage-min-threshold-microvolt:
     type: int
     required: true
