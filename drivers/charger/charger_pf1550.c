@@ -72,7 +72,7 @@ struct charger_pf1550_led_config {
 	uint8_t frequency;
 	uint8_t duty;
 	enum pf1550_led_behaviour behaviour;
-}
+};
 
 struct charger_pf1550_config {
 	struct i2c_dt_spec bus;
@@ -97,7 +97,7 @@ struct charger_pf1550_data {
 	uint32_t charge_current_ua;
 	uint32_t vbus_ilim_ua;
 	/* TODO: move me to config as soon as dt is ready */
-	enum charger_pf1550_led_config* led_config;
+	struct charger_pf1550_led_config* led_config;
 };
 
 static const struct linear_range charger_vbus_ilim_range[] = {
@@ -126,7 +126,7 @@ static int pf1550_get_charger_status(const struct device *dev, enum charger_stat
 	enum chg_sns {
 		PF1550_CHARGER_PRECHARGE,
 		PF1550_FAST_CHARGE_CONSTANT_CURRENT,
-		PF1550_FAST_CHARGE_CONSTANT_CURRENT,
+		PF1550_FAST_CHARGE_CONSTANT_VOLTAGE,
 		PF1550_END_OF_CHARGE,
 		PF1550_CHARGE_DONE,
 		PF1550_TIMER_FAULT = 6,
@@ -146,7 +146,7 @@ static int pf1550_get_charger_status(const struct device *dev, enum charger_stat
 		return ret;
 	}
 
-	val = FIELD_GET(GEN_MASK(3,0), val);
+	val = FIELD_GET(GENMASK(3,0), val);
 
 	if (val == PF1550_CHARGE_DONE) {
 		*status = CHARGER_STATUS_FULL;
@@ -175,7 +175,7 @@ static int pf1550_get_charger_online(const struct device *dev, enum charger_onli
 		return ret;
 	}
 
-	val = FIELD_GET(GEN_MASK(1,0), val);
+	val = FIELD_GET(GENMASK(1,0), val);
 
 	switch (val) {
 	case PF1550_CHARGER_ON_LINEAR_ON:
@@ -213,15 +213,16 @@ static int pf1550_set_constant_charge_current(const struct device *dev,
 static int pf1550_set_vbus_ilim(const struct device *dev, uint32_t current_ua)
 {
 	const struct charger_pf1550_config *const config = dev->config;
+	uint16_t idx;
 	uint8_t val;
 	int ret;
 
-	ret = linear_range_group_get_index(charger_vbus_ilim_range, ARRAY_SIZE(charger_vbus_ilim_range), current_ua, &val);
+	ret = linear_range_group_get_index(charger_vbus_ilim_range, ARRAY_SIZE(charger_vbus_ilim_range), current_ua, &idx);
 	if (ret < 0) {
 		return ret;
 	}
 
-	val = FIELD_PREP(GENMASK(7,3), val);
+	val = FIELD_PREP(GENMASK(7,3), idx);
 
 	return i2c_reg_update_byte_dt(&config->bus,
 				      CHARGER_VBUS_INLIM_CNFG,
@@ -236,7 +237,7 @@ static int pf1550_set_vsys_min(const struct device *dev, uint32_t voltage_uv)
 	uint8_t val;
 	int ret;
 
-	ret = linear_range_group_get_index(charger_vsysmin_uv, ARRAY_SIZE(charger_vsysmin_uv) voltage_uv, &idx);
+	ret = linear_range_group_get_index(charger_vsysmin_uv, ARRAY_SIZE(charger_vsysmin_uv), voltage_uv, &idx);
 	if (ret < 0) {
 		return ret;
 	}
@@ -256,7 +257,7 @@ static int pf1550_set_charge_termination_uv(const struct device *dev, uint32_t v
 	uint8_t val;
 	int ret;
 
-	ret = linear_range_group_get_index(charger_battery_termination_uv_range, ARRAY_SIZE(charger_battery_termination_uv_range) voltage_uv, &idx);
+	ret = linear_range_group_get_index(charger_battery_termination_uv_range, ARRAY_SIZE(charger_battery_termination_uv_range), voltage_uv, &idx);
 	if (ret < 0) {
 		return ret;
 	}
@@ -303,7 +304,7 @@ static int pf1550_get_interrupt_source(const struct device *dev, uint8_t *int_a)
 
 	int_src = (int_a != NULL) ? int_a : &dummy;
 	return i2c_reg_read_byte_dt(&config->bus, CHARGER_CHG_INT, int_src);
-
+}
 
 static int pf1550_enable_interrupts(const struct device *dev)
 {
@@ -323,6 +324,7 @@ static int pf1550_enable_interrupts(const struct device *dev)
 static int pf1550_led_config(const struct device *dev)
 {
 	struct charger_pf1550_data *data = dev->data;
+	const struct charger_pf1550_config *config = dev->config;
 	int ret;
 	uint8_t val;
 
@@ -335,7 +337,7 @@ static int pf1550_led_config(const struct device *dev)
 		return ret;
 	}
 
-	val = (cfg->manual ? BIT(5) : 0) | (cfg->behaviour ? BIT(4) : 0) | cfg->freq;
+	val = (cfg->manual ? BIT(5) : 0) | (cfg->behaviour ? BIT(4) : 0) | cfg->frequency;
 
 	return i2c_reg_write_byte_dt(&config->bus, CHARGER_LED_CNFG, val);
 }
@@ -412,7 +414,7 @@ static int pf1550_update_properties(const struct device *dev)
 		return ret;
 	}
 
-	ret = pf1550_set_sys_voltage_min_threshold(dev, config->min_vsys_uv);
+	ret = pf1550_set_vsys_min(dev, config->vsys_min_uv);
 	if (ret < 0) {
 		LOG_ERR("Failed to set minimum system voltage threshold: %d", ret);
 		return ret;
@@ -558,7 +560,7 @@ static void pf1550_int_routine_work_handler(struct k_work *work)
 		}
 	}
 
-	ret = pr1550_get_charger_online(data->dev, &data->charger_online);
+	ret = pf1550_get_charger_online(data->dev, &data->charger_online);
 	if (ret < 0) {
 		LOG_WRN("Failed to read charger online %d", ret);
 	} else {
@@ -674,7 +676,7 @@ static const struct charger_driver_api pf1550_driver_api = {
 		.int_gpio = GPIO_DT_SPEC_INST_GET(inst, int_gpios),				\
 		.charge_current_ua = DT_INST_PROP(inst, constant_charge_current_max_microamp),	\
 		.vbus_ilim_ua = DT_INST_PROP(inst, vbus_current_limit_microamp),\
-		.min_vsys_uv = DT_INST_PROP(inst, system_voltage_min_threshold_microvolt),	\
+		.vsys_min_uv = DT_INST_PROP(inst, system_voltage_min_threshold_microvolt),	\
 		.therm_mon_mode = DT_INST_PROP(inst, thermistor_monitoring_mode),		\
 	};											\
 												\

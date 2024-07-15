@@ -94,6 +94,7 @@
 		compatible = "nxp,pf1550";
 
 		regulators {
+			status = "okay";
 			compatible = "nxp,pf1550-regulator";
 			pf1550_sw1: BUCK1 {
 				regulator-init-microvolt = <3000000>;
@@ -123,12 +124,14 @@
 		};
 
 		charger {
+			status = "okay";
 			compatible = "nxp,pf1550-charger";
 			constant-charge-current-max-microamp = <100000>;
 			vbus-current-limit-microamp = <1500000>;
 			system-voltage-min-threshold-microvolt = <3500000>;
 			thermistor-monitoring-mode = "thermistor";
 			int-gpios = <&gpiok 0 GPIO_ACTIVE_LOW>;
+		};
 	};
 };
 
