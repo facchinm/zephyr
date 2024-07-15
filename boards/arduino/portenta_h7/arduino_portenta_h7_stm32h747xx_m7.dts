@@ -121,6 +121,14 @@
 				regulator-boot-on;
 			};
 		};
+
+		charger {
+			compatible = "nxp,pf1550-charger";
+			constant-charge-current-max-microamp = <100000>;
+			vbus-current-limit-microamp = <1500000>;
+			system-voltage-min-threshold-microvolt = <3500000>;
+			thermistor-monitoring-mode = "thermistor";
+			int-gpios = <&gpiok 0 GPIO_ACTIVE_LOW>;
 	};
 };
 
