@@ -44,6 +44,11 @@ EXPORT_SYMBOL(tolower);
 EXPORT_SYMBOL(toupper);
 
 FORCE_EXPORT_SYM(usb_enable);
+FORCE_EXPORT_SYM(usb_disable);
+
+FORCE_EXPORT_SYM(k_timer_init);
+//FORCE_EXPORT_SYM(k_timer_user_data_set);
+//FORCE_EXPORT_SYM(k_timer_start);
 
 EXPORT_SYMBOL(sprintf);
 EXPORT_SYMBOL(snprintf);
