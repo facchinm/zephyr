@@ -43,6 +43,8 @@ EXPORT_SYMBOL(isalnum);
 EXPORT_SYMBOL(tolower);
 EXPORT_SYMBOL(toupper);
 
+FORCE_EXPORT_SYM(usb_enable);
+
 EXPORT_SYMBOL(sprintf);
 EXPORT_SYMBOL(snprintf);
 FORCE_EXPORT_SYM(cbvprintf);
