@@ -9,6 +9,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #define FORCE_EXPORT_SYM(name) \
 	extern void name(void); \
@@ -49,6 +50,11 @@ FORCE_EXPORT_SYM(usb_disable);
 FORCE_EXPORT_SYM(k_timer_init);
 //FORCE_EXPORT_SYM(k_timer_user_data_set);
 //FORCE_EXPORT_SYM(k_timer_start);
+
+EXPORT_SYMBOL(sin);
+EXPORT_SYMBOL(cos);
+EXPORT_SYMBOL(tan);
+EXPORT_SYMBOL(atan);
 
 EXPORT_SYMBOL(sprintf);
 EXPORT_SYMBOL(snprintf);
