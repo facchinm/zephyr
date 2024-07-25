@@ -44,8 +44,10 @@ EXPORT_SYMBOL(isalnum);
 EXPORT_SYMBOL(tolower);
 EXPORT_SYMBOL(toupper);
 
+#if defined(CONFIG_USB_DEVICE_STACK)
 FORCE_EXPORT_SYM(usb_enable);
 FORCE_EXPORT_SYM(usb_disable);
+#endif
 
 FORCE_EXPORT_SYM(k_timer_init);
 //FORCE_EXPORT_SYM(k_timer_user_data_set);
