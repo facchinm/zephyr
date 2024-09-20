@@ -3,8 +3,9 @@
 
 if BOARD_ARDUINO_GIGA_R1
 
-if BT
+if WIFI || BT
 
+# Select AIROC part and module
 choice AIROC_PART
 	default CYW4343W
 endchoice
@@ -13,6 +14,38 @@ choice CYW4343W_MODULE
 	default CYW4343W_MURATA_1DX
 endchoice
 
+endif # WIFI || BT
+
+if WIFI
+
+config DISK_DRIVER_SDMMC
+	default y
+
+config SDMMC_STM32
+	default y
+
+config WIFI_AIROC
+	default y
+
+# Enable L2 Ethernet
+config NET_L2_ETHERNET
+	default y
+
+endif # WIFI
+
+if BT
+
+# Select HCI components
+config UART
+	bool
+	default y
+
 endif # BT
+
+# Heap Pool Size
+config HEAP_MEM_POOL_ADD_SIZE_BOARD
+	int
+	default 15000 if WIFI
+	default 4096
 
 endif # BOARD_ARDUINO_GIGA_R1

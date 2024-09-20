@@ -37,6 +37,7 @@
 		led0 = &red_led;
 		led1 = &green_led;
 		sw0 = &user_button;
+		sdhc0 = &sdmmc1;
 	};
 };
 
@@ -132,6 +133,13 @@
 	clock-frequency = <I2C_BITRATE_FAST>;
 };
 
+&spi1 {
+	status = "okay";
+	pinctrl-0 = <&spi1_nss_pa4 &spi1_sck_pb3
+		     &spi1_miso_pg9 &spi1_mosi_pd7>;
+	pinctrl-names = "default";
+};
+
 &spi5 {
 	status = "okay";
 	pinctrl-0 = <&spi5_nss_pk1 &spi5_sck_ph6
@@ -205,6 +213,25 @@
 	status = "okay";
 	pinctrl-0 = <&dac1_out1_pa4 &dac1_out2_pa5>;
 	pinctrl-names = "default";
+};
+
+&sdmmc1 {
+	status = "okay";
+
+	/* SDIO pins */
+	pinctrl-0 = <&sdmmc1_cmd_pd2 &sdmmc1_ck_pc12 &sdmmc1_d0_pc8
+		     &sdmmc1_d1_pc9 &sdmmc1_d2_pc10 &sdmmc1_d3_pc11>;
+	pinctrl-names = "default";
+
+	/* Wi-Fi configuration */
+	airoc-wifi {
+		status = "okay";
+		compatible = "infineon,airoc-wifi";
+
+		/* Wi-Fi control gpios */
+		wifi-reg-on-gpios    = <&gpiob 10 GPIO_ACTIVE_HIGH>;
+		wifi-host-wake-gpios = <&gpioi 8 GPIO_ACTIVE_HIGH>;
+	};
 };
 
 &fmc {
