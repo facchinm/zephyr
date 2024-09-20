@@ -49,6 +49,24 @@ FORCE_EXPORT_SYM(usb_enable);
 FORCE_EXPORT_SYM(usb_disable);
 #endif
 
+FORCE_EXPORT_SYM(z_log_msg_runtime_vcreate);
+
+#if defined(CONFIG_NETWORKING)
+FORCE_EXPORT_SYM(net_if_foreach);
+FORCE_EXPORT_SYM(net_if_get_by_iface);
+#endif
+
+#if defined(CONFIG_NET_DHCPV4)
+FORCE_EXPORT_SYM(net_dhcpv4_start);
+#if defined(CONFIG_NET_DHCPV4_OPTION_CALLBACKS)
+FORCE_EXPORT_SYM(net_dhcpv4_add_option_callback);
+#endif
+#endif
+
+#if defined(CONFIG_NET_MGMT_EVENT)
+FORCE_EXPORT_SYM(net_mgmt_add_event_callback);
+#endif
+
 FORCE_EXPORT_SYM(k_timer_init);
 //FORCE_EXPORT_SYM(k_timer_user_data_set);
 //FORCE_EXPORT_SYM(k_timer_start);
@@ -63,9 +81,11 @@ EXPORT_SYMBOL(snprintf);
 FORCE_EXPORT_SYM(cbvprintf);
 
 FORCE_EXPORT_SYM(abort);
+#if defined(CONFIG_RING_BUFFER)
 FORCE_EXPORT_SYM(ring_buf_get);
 FORCE_EXPORT_SYM(ring_buf_peek);
 FORCE_EXPORT_SYM(ring_buf_put);
+#endif
 FORCE_EXPORT_SYM(sys_clock_cycle_get_32);
 FORCE_EXPORT_SYM(__aeabi_dcmpun);
 FORCE_EXPORT_SYM(__aeabi_dcmple);
