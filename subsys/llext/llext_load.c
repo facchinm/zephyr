@@ -592,7 +592,7 @@ static int llext_call_array(struct llext_loader *ldr, struct llext *ext, enum ll
 	return 0;
 }
 
-static int llext_call_inits(struct llext_loader *ldr, struct llext *ext)
+int llext_call_inits(struct llext_loader *ldr, struct llext *ext)
 {
 	int ret;
 
@@ -695,12 +695,14 @@ int do_llext_load(struct llext_loader *ldr, struct llext *ext,
 		goto out;
 	}
 
+/*
 	LOG_DBG("Calling init functions...");
 	ret = llext_call_inits(ldr, ext);
 	if (ret != 0) {
 		LOG_ERR("Failed to init, ret %d", ret);
 		goto out;
 	}
+*/
 
 out:
 	/*
