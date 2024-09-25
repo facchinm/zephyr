@@ -67,6 +67,22 @@ FORCE_EXPORT_SYM(net_dhcpv4_add_option_callback);
 FORCE_EXPORT_SYM(net_mgmt_add_event_callback);
 #endif
 
+
+#if defined(CONFIG_NET_SOCKETS)
+FORCE_EXPORT_SYM(getaddrinfo);
+FORCE_EXPORT_SYM(socket);
+FORCE_EXPORT_SYM(connect);
+FORCE_EXPORT_SYM(send);
+FORCE_EXPORT_SYM(recv);
+FORCE_EXPORT_SYM(open);
+FORCE_EXPORT_SYM(close);
+EXPORT_SYMBOL(exit);
+#endif
+
+#if defined(CONFIG_CDC_ACM_DTE_RATE_CALLBACK_SUPPORT)
+FORCE_EXPORT_SYM(cdc_acm_dte_rate_callback_set);
+#endif
+
 FORCE_EXPORT_SYM(k_timer_init);
 //FORCE_EXPORT_SYM(k_timer_user_data_set);
 //FORCE_EXPORT_SYM(k_timer_start);
@@ -76,6 +92,9 @@ EXPORT_SYMBOL(cos);
 EXPORT_SYMBOL(tan);
 EXPORT_SYMBOL(atan);
 
+EXPORT_SYMBOL(puts);
+EXPORT_SYMBOL(putchar);
+EXPORT_SYMBOL(printf);
 EXPORT_SYMBOL(sprintf);
 EXPORT_SYMBOL(snprintf);
 FORCE_EXPORT_SYM(cbvprintf);
