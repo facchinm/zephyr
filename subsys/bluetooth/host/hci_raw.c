@@ -117,6 +117,7 @@ struct net_buf *bt_buf_get_tx(enum bt_buf_type type, k_timeout_t timeout,
 {
 	struct net_buf_pool *pool;
 	struct net_buf *buf;
+	bool raw = false;
 
 	switch (type) {
 	case BT_BUF_CMD:
@@ -159,6 +160,11 @@ struct net_buf *bt_buf_get_tx(enum bt_buf_type type, k_timeout_t timeout,
 			data = (uint8_t *)data + 1;
 			size--;
 			break;
+		} else if (raw_mode == BT_HCI_RAW_MODE_PASSTHROUGH) {
+			//reuse CMD pool
+			pool = &hci_cmd_pool;
+			raw = true;
+			break;
 		}
 		__fallthrough;
 	default:
@@ -172,7 +178,9 @@ struct net_buf *bt_buf_get_tx(enum bt_buf_type type, k_timeout_t timeout,
 	}
 
 	net_buf_reserve(buf, BT_BUF_RESERVE);
-	bt_buf_set_type(buf, type);
+	if (!raw) {
+		bt_buf_set_type(buf, type);
+	}
 
 	if (data && size) {
 		if (net_buf_tailroom(buf) < size) {
