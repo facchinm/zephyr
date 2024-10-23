@@ -159,26 +159,6 @@ int main(void)
 		return 0;
 	}
 
-	if (!video_get_frmival(video_dev, VIDEO_EP_OUT, &frmival)) {
-		LOG_INF("- Default frame rate : %f fps",
-		       1.0 * frmival.denominator / frmival.numerator);
-	}
-
-	LOG_INF("- Supported frame intervals for the default format:");
-	memset(&fie, 0, sizeof(fie));
-	fie.format = &fmt;
-	while (video_enum_frmival(video_dev, VIDEO_EP_OUT, &fie) == 0) {
-		if (fie.type == VIDEO_FRMIVAL_TYPE_DISCRETE) {
-			LOG_INF("   %u/%u ", fie.discrete.numerator, fie.discrete.denominator);
-		} else {
-			LOG_INF("   [min = %u/%u; max = %u/%u; step = %u/%u]",
-			       fie.stepwise.min.numerator, fie.stepwise.min.denominator,
-			       fie.stepwise.max.numerator, fie.stepwise.max.denominator,
-			       fie.stepwise.step.numerator, fie.stepwise.step.denominator);
-		}
-		fie.index++;
-	}
-
 #ifdef CONFIG_TEST
 	video_set_ctrl(video_dev, VIDEO_CID_CAMERA_TEST_PATTERN, (void *)1);
 #endif
@@ -199,19 +179,11 @@ int main(void)
 #endif
 
 	/* Size to allocate for each buffer */
-	if (caps.min_line_count == LINE_COUNT_HEIGHT) {
-		bsize = fmt.pitch * fmt.height;
-	} else {
-		bsize = fmt.pitch * caps.min_line_count;
-	}
+	bsize = fmt.pitch * fmt.height;
 
 	/* Alloc video buffers and enqueue for capture */
 	for (i = 0; i < ARRAY_SIZE(buffers); i++) {
-		/*
-		 * For some hardwares, such as the PxP used on i.MX RT1170 to do image rotation,
-		 * buffer alignment is needed in order to achieve the best performance
-		 */
-		buffers[i] = video_buffer_aligned_alloc(bsize, CONFIG_VIDEO_BUFFER_POOL_ALIGN);
+		buffers[i] = video_buffer_alloc(bsize);
 		if (buffers[i] == NULL) {
 			LOG_ERR("Unable to alloc video buffer");
 			return 0;

@@ -28,7 +28,7 @@ LOG_MODULE_REGISTER(video_gc2145, CONFIG_VIDEO_LOG_LEVEL);
 #define GC2145_REG_RESET                0xFE
 #define GC2145_REG_SW_RESET             0x80
 #define GC2145_PID_VAL                  0x21
-#define GC2145_REV_VAL                  0x55
+#define GC2145_REV_VAL                  0x45
 #define GC2145_SET_P0_REGS              0x00
 #define GC2145_REG_CROP_ENABLE          0x90
 #define GC2145_CROP_SET_ENABLE          0x01
@@ -79,7 +79,7 @@ static const struct gc2145_reg default_regs[] = {
 	{0x9a, 0x0E}, /* Subsample mode */
 
 	{0x12, 0x2e},
-	{GC2145_REG_OUTPUT_FMT, 0x14}, /* Analog Mode 1 (vflip/mirror[1:0]) */
+	{GC2145_REG_AMODE1, 0x14}, /* Analog Mode 1 (vflip/mirror[1:0]) */
 	{0x18, 0x22},                  /* Analog Mode 2 */
 	{0x19, 0x0e},
 	{0x1a, 0x01},
@@ -195,7 +195,7 @@ static const struct gc2145_reg default_regs[] = {
 	{0x0c, 0x10},
 	{0x11, 0x10},
 	{0x13, 0x68},
-	{GC2145_REG_OUTPUT_FMT, 0x00},
+	{0x17, 0x00},
 	{0x1c, 0x11},
 	{0x1e, 0x61},
 	{0x1f, 0x35},
@@ -262,7 +262,7 @@ static const struct gc2145_reg default_regs[] = {
 	{0x14, 0x27},
 	{0x15, 0x37},
 	{0x16, 0x45},
-	{GC2145_REG_OUTPUT_FMT, 0x53},
+	{0x17, 0x53},
 	{0x18, 0x69},
 	{0x19, 0x7d},
 	{0x1a, 0x8f},
@@ -1039,7 +1039,7 @@ static int gc2145_set_fmt(const struct device *dev, enum video_endpoint_id ep,
 	}
 
 	/* Check if camera is capable of handling given format */
-	for (int i = 0; i == ARRAY_SIZE(fmts); i++) {
+	for (int i = 0; i < RESOLUTIONS_MAX; i++) {
 		if (fmts[i].width_min == fmt->width && fmts[i].height_min == fmt->height &&
 		    fmts[i].pixelformat == fmt->pixelformat) {
 			res = (enum resolutions)i;
