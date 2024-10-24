@@ -22,7 +22,18 @@
 
 LOG_MODULE_REGISTER(video_stm32_dcmi, CONFIG_VIDEO_LOG_LEVEL);
 
-K_HEAP_DEFINE(video_stm32_buffer_pool, CONFIG_VIDEO_BUFFER_POOL_SZ_MAX);
+#if DT_INST_NODE_HAS_PROP(0, ext_sdram)
+#if DT_SAME_NODE(DT_INST_PHANDLE(0, ext_sdram), DT_NODELABEL(sdram1))
+#define BUFFER_POOL_SECTION __stm32_sdram1_section
+#elif DT_SAME_NODE(DT_INST_PHANDLE(0, ext_sdram), DT_NODELABEL(sdram2))
+#define BUFFER_POOL_SECTION __stm32_sdram2_section
+#endif
+#else
+#define BUFFER_POOL_SECTION
+#endif /* DT_SAME_NODE(DT_INST_PHANDLE(0, ext_sdram), DT_NODELABEL(sdram1)) */
+static struct k_heap video_stm32_buffer_pool;
+BUFFER_POOL_SECTION
+__aligned(32) static uint8_t video_stm32_buffer_pool_buf[CONFIG_VIDEO_BUFFER_POOL_SZ_MAX];
 
 typedef void (*irq_config_func_t)(const struct device *dev);
 
@@ -527,6 +538,9 @@ static int video_stm32_dcmi_init(const struct device *dev)
 
 	k_sleep(K_MSEC(100));
 	LOG_DBG("%s inited", dev->name);
+
+	k_heap_init(&video_stm32_buffer_pool, video_stm32_buffer_pool_buf,
+		    CONFIG_VIDEO_BUFFER_POOL_SZ_MAX);
 
 	return 0;
 }
