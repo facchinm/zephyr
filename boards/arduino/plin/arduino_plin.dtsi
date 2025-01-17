@@ -106,13 +106,32 @@
 	status = "okay";
 };
 
-&enet {
-	pinctrl-0 = <&pinmux_enet>;
+&enet1g_mac {
+	status = "disabled";
+	pinctrl-0 = <&pinmux_enet1g>;
 	pinctrl-names = "default";
-	ptp {
-		pinctrl-0 = <&pinmux_ptp>;
-		pinctrl-names = "default";
+	phy-handle = <&enet1g_phy>;
+	phy-connection-type = "rgmii";
+	zephyr,random-mac-address;
+};
+
+&enet1g_mdio {
+	status = "disabled";
+	pinctrl-0 = <&pinmux_enet1g_mdio>;
+	pinctrl-names = "default";
+	enet1g_phy: phy@1 {
+		compatible = "realtek,rtl8211f";
+		reg = <1>;
+		status = "disabled";
+		reset-gpios = <&gpio11 1 GPIO_ACTIVE_HIGH>;
+		int-gpios = <&gpio5 2 GPIO_ACTIVE_LOW>;
 	};
+};
+
+&enet1g_ptp_clock {
+	status = "disabled";
+	pinctrl-0 = <&pinmux_enet1g_ptp>;
+	pinctrl-names = "default";
 };
 
 &flexcan3 {
@@ -200,5 +219,14 @@
 				reg = <0x00641000 DT_SIZE_K(1856)>;
 			};
 		};
+	};
+};
+
+/ {
+	msc_disk0 {
+		compatible = "zephyr,flash-disk";
+		partition = <&storage_partition>;
+		disk-name = "NAND";
+		cache-size = <4096>;
 	};
 };
