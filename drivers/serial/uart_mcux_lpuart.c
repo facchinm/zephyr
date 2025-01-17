@@ -1167,7 +1167,7 @@ static int mcux_lpuart_configure(const struct device *dev,
 	config->base->CTRL &= ~LPUART_CTRL_RSRC_MASK;
 
 	/* disable LPUART */
-	LPUART_Deinit(config->base);
+	// LPUART_Deinit(config->base);
 
 	int ret = mcux_lpuart_configure_init(dev, cfg);
 	if (ret) {
