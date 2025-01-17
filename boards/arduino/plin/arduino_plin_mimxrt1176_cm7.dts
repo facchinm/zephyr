@@ -31,13 +31,29 @@
 		zephyr,code-partition = &slot0_partition;
 		zephyr,cpu1-region = &ocram;
 		zephyr,ipc = &mailbox_a;
-		zephyr,bt-uart = &lpuart8;
+		zephyr,bt-hci = &bt_hci_uart;
+		zephyr,entropy = &rng_hci;
 	};
 
 	sdram0: memory@80000000 {
 		/* GigaDevice GD25BI128 */
 		device_type = "memory";
 		reg = <0x80000000 DT_SIZE_M(16)>;
+	};
+
+	rng_hci: entropy_bt_hci {
+		compatible = "zephyr,bt-hci-entropy";
+		status = "okay";
+	};
+
+	/* This regulator controls the VDD_3V3_ENET supply. */
+	reg-3v3-enet {
+		compatible = "regulator-fixed";
+		regulator-name = "reg-3v3-enet";
+		enable-gpios = <&gpio11 12 GPIO_ACTIVE_HIGH>;
+		startup-delay-us = <2000>;
+		regulator-always-on;
+		status = "okay";
 	};
 
 	/*
@@ -94,16 +110,6 @@ nxp_mipi_i2c: &lpi2c5 {
 	status = "okay";
 };
 
-&usdhc1 {
-	status = "okay";
-	detect-dat3;
-	pwr-gpios = <&gpio10 2 GPIO_ACTIVE_LOW>;
-	sdmmc {
-		compatible = "zephyr,sdmmc-disk";
-		status = "okay";
-	};
-};
-
 &edma0 {
 	status = "okay";
 };
@@ -124,20 +130,41 @@ nxp_mipi_i2c: &lpi2c5 {
 	status = "okay";
 };
 
-&enet {
-	status = "okay";
-	int-gpios = <&gpio11 2 GPIO_ACTIVE_HIGH>;
-	reset-gpios = <&gpio11 1 GPIO_ACTIVE_HIGH>;
-	ptp {
-		status = "okay";
-	};
-};
-
 &sai1 {
 	status = "okay";
 };
 
 zephyr_udc0: &usb1 {
+	status = "okay";
+	phy_handle = <&usbphy1>;
+	cdc_acm_uart0: cdc_acm_uart0 {
+		compatible = "zephyr,cdc-acm-uart";
+	};
+};
+
+&usbphy1 {
+	status = "okay";
+	tx-d-cal = <7>;
+	tx-cal-45-dp-ohms = <6>;
+	tx-cal-45-dm-ohms = <6>;
+};
+
+&enet1g {
+	status = "okay";
+};
+
+&enet1g_mac {
+	status = "okay";
+};
+
+&enet1g_mdio {
+	status = "okay";
+	enet1g_phy: phy@1 {
+		status = "okay";
+	};
+};
+
+&enet1g_ptp_clock {
 	status = "okay";
 };
 
@@ -148,17 +175,19 @@ zephyr_udc0: &usb1 {
 &lpuart8 {
 	pinctrl-0 = <&pinmux_lpuart8>;
 	pinctrl-names = "default";
-	current-speed = <115200>;
 	status = "okay";
-	hw-flow-control;
+	current-speed = <115200>;
 
-	murata-1dx {
-		status = "okay";
-		compatible = "infineon,cyw43xxx-bt-hci";
-		bt-reg-on-gpios = <&gpio8 28 GPIO_ACTIVE_HIGH>;
-		bt-host-wake-gpios = <&gpio8 19 GPIO_ACTIVE_HIGH>;
-		bt-dev-wake-gpios = <&gpio8 18 GPIO_ACTIVE_HIGH>;
-		fw-download-speed = <115200>;
-		hci-operation-speed = <115200>;
+	bt_hci_uart: bt_hci_uart {
+		compatible = "zephyr,bt-hci-uart";
+
+		bt_module {
+			compatible = "nxp,bt-hci-uart";
+			sdio-reset-gpios = <&gpio3 6 GPIO_ACTIVE_HIGH>;
+			w-disable-gpios = <&gpio3 6 GPIO_ACTIVE_HIGH>;
+			hci-operation-speed = <115200>;
+			hw-flow-control;
+			fw-download-primary-speed = <115200>;
+		};
 	};
 };
