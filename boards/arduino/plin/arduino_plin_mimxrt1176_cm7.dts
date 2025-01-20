@@ -32,7 +32,7 @@
 		zephyr,cpu1-region = &ocram;
 		zephyr,ipc = &mailbox_a;
 		zephyr,bt-hci = &bt_hci_uart;
-		zephyr,entropy = &rng_hci;
+		zephyr,entropy = &caam;
 	};
 
 	sdram0: memory@80000000 {
@@ -131,6 +131,10 @@ nxp_mipi_i2c: &lpi2c5 {
 };
 
 &sai1 {
+	status = "okay";
+};
+
+&caam {
 	status = "okay";
 };
 

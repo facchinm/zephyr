@@ -120,7 +120,8 @@
 	pinctrl-0 = <&pinmux_enet1g_mdio>;
 	pinctrl-names = "default";
 	enet1g_phy: phy@1 {
-		compatible = "realtek,rtl8211f";
+		compatible = "microchip,ksz9131";
+		microchip,interface-type = "rgmii";
 		reg = <1>;
 		status = "disabled";
 		reset-gpios = <&gpio11 1 GPIO_ACTIVE_HIGH>;
