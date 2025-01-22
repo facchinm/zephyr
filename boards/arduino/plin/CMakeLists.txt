@@ -6,16 +6,6 @@
 
 if(CONFIG_NXP_IMXRT_BOOT_HEADER)
   zephyr_library()
-  if(NOT ((DEFINED CONFIG_BOARD_ARDUINO_PLIN)))
-    message(WARNING "It appears you are using the board definition for "
-     "the MIMXRT1170-EVK, but targeting a custom board. You may need to "
-     "update your flash configuration or device configuration data blocks")
-  endif()
-  if ((DEFINED CONFIG_BOARD_ARDUINO_PLIN))
-    set(RT1170_BOARD_NAME "evkmimxrt1170")
-  endif()
-  set(RT1170_BOARD_DIR
-    "${ZEPHYR_HAL_NXP_MODULE_DIR}/mcux/mcux-sdk/boards/${RT1170_BOARD_NAME}")
   if(CONFIG_BOOT_FLEXSPI_NOR)
     # Include flash configuration block for RT1170 EVK from NXP's HAL.
     # This configuration block may need modification if another flash chip is
