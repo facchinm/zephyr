@@ -169,8 +169,16 @@ set(install_dir_var "${llext_edk_name_sane}_INSTALL_DIR")
 set(make_relative FALSE)
 foreach(flag ${llext_edk_cflags})
     if (flag STREQUAL "-imacros")
+        # -imacros followed by a space, convert next argument
         set(make_relative TRUE)
-    elseif (make_relative)
+        continue()
+    elseif (flag MATCHES "-imacros.*")
+        # -imacros<stuff>, convert <stuff>
+        string(SUBSTRING ${flag} 8 -1 flag)
+        set(make_relative TRUE)
+    endif()
+
+    if (make_relative)
         set(make_relative FALSE)
         cmake_path(GET flag PARENT_PATH parent)
         cmake_path(GET flag FILENAME name)
