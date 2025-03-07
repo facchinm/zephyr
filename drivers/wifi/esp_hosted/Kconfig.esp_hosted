@@ -1,0 +1,22 @@
+# ESP Hosted WiFi driver options
+
+# Copyright (c) 2025 Arduino SA
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig WIFI_ESP_HOSTED
+	bool "ESP_HOSTED driver support"
+	depends on DT_HAS_ESPRESSIF_ESP_HOSTED_ENABLED
+	default y
+	select GPIO
+	select SPI
+	select WIFI_OFFLOAD
+	select NET_L2_ETHERNET
+	select NET_L2_WIFI_MGMT
+	select WIFI_USE_NATIVE_NETWORKING
+
+if WIFI_ESP_HOSTED
+config WIFI_ESP_HOSTED_DEBUG
+	bool "Enable extra debugging messages"
+	help
+	  Enable stack debugging messages.
+endif
