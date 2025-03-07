@@ -21,6 +21,11 @@
 		};
 	};
 
+	chosen {
+		zephyr,console = &uart9;
+		zephyr,shell-uart = &uart9;
+	};
+
 	pwm_leds {
 		compatible = "pwm-leds";
 		status = "disabled";
@@ -79,3 +84,18 @@
 qwiic_i2c: &iic0 {};
 arduino_i2c: &iic1 {};
 arduino_spi: &spi1 {};
+
+/delete-node/ &sci2;
+
+&sci9 {
+	status = "okay";
+	pinctrl-0 = <&sci9_default>;
+	pinctrl-names = "default";
+	interrupts = <4 1>, <5 1>, <6 1>, <7 1>;
+	interrupt-names = "rxi", "txi", "tei", "eri";
+
+	uart9: uart {
+		current-speed = <115200>;
+		status = "okay";
+	};
+};
