@@ -140,7 +140,7 @@ nxp_mipi_i2c: &lpi2c5 {
 
 zephyr_udc0: &usb1 {
 	status = "okay";
-	phy_handle = <&usbphy1>;
+	/* phy_handle = <&usbphy1>; */
 	cdc_acm_uart0: cdc_acm_uart0 {
 		compatible = "zephyr,cdc-acm-uart";
 	};
@@ -158,13 +158,13 @@ zephyr_udc0: &usb1 {
 };
 
 &enet1g_mac {
-	status = "okay";
+	status = "disabled";
 };
 
 &enet1g_mdio {
-	status = "okay";
+	status = "disabled";
 	enet1g_phy: phy@1 {
-		status = "okay";
+		status = "disabled";
 	};
 };
 
@@ -193,5 +193,19 @@ zephyr_udc0: &usb1 {
 			hw-flow-control;
 			fw-download-primary-speed = <115200>;
 		};
+	};
+};
+
+&usdhc1 {
+	status = "okay";
+	power-delay-ms = <1000>;
+	pwr-gpios = <&gpio9 6 GPIO_ACTIVE_HIGH>;
+	cd-gpios = <&gpio2 28 GPIO_ACTIVE_LOW>;
+	status = "okay";
+	pinctrl-0 = <&pinmux_usdhc1>;
+	pinctrl-names = "default";
+	nxp_wifi {
+		compatible = "nxp,wifi";
+		status = "okay";
 	};
 };

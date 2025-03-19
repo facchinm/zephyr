@@ -170,11 +170,6 @@
 	pinctrl-names = "default";
 };
 
-&usdhc1 {
-	pinctrl-0 = <&pinmux_usdhc1>;
-	pinctrl-names = "default";
-};
-
 &flexspi {
 	status = "okay";
 	ahb-prefetch;
