@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2026 Arduino SA
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+#include "arduino_mezza-common.dtsi"
+
+/ {
+	model = "Arduino Mezza";
+	compatible = "arduino,mezza";
+
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	chosen {
+		zephyr,console = &usart2;
+		zephyr,shell-uart = &usart2;
+		zephyr,sram = &sram1;
+		zephyr,flash = &flash0;
+		zephyr,code-partition = &slot0_partition;
+		zephyr,canbus = &fdcan1;
+	};
+
+	aliases {
+		led0 = &green_led_0;
+		led1 = &blue_led_0;
+		watchdog0 = &iwdg;
+		volt-sensor0 = &vref;
+		volt-sensor1 = &vbat;
+	};
+
+	zephyr,user {
+		relay1-gpios = <&gpioh 2 GPIO_ACTIVE_HIGH>;
+		relay2-gpios = <&gpioh 3 GPIO_ACTIVE_HIGH>;
+		detectout-gpios = <&gpiob 0 GPIO_ACTIVE_LOW>;
+	};
+};
+
+&rng {
+	status = "okay";
+};
+
+&backup_sram {
+	status = "okay";
+};
+
+&zephyr_udc0 {
+	board_cdc_acm_uart: board_cdc_acm_uart {
+		compatible = "zephyr,cdc-acm-uart";
+		status = "okay";
+	};
+};
