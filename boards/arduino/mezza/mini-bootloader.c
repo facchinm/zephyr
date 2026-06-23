@@ -14,38 +14,40 @@
 #define BACKUP_SRAM_NODE DT_INST(0, st_stm32_backup_sram)
 #define BACKUP_SRAM_ADDR DT_REG_ADDR(BACKUP_SRAM_NODE)
 
-/**
- * @brief Standard ARM Cortex-M routine to jump to a ROM Bootloader
- */
-static void jump_to_rom_bootloader(void)
+void JumpToBootloader (void)
 {
-	void (*bootloader_jump)(void);
-	uint32_t jump_addr = *(__IO uint32_t *)(STM32H5_ROM_BOOTLOADER_ADDR + 4);
-
-	bootloader_jump = (void (*)(void))jump_addr;
-
-	/* 1. Disable all interrupts */
-	irq_lock();
-
-	/* 2. Disable SysTick */
+uint32_t i=0;
+void (*SysMemBootJump)(void);
+/* Set a vector addressed with STM32 Microcontrollers names */
+/* Each vector position contains an address to the boot loader entry point */
+	volatile uint32_t BootAddr = 0x0BFAC000;
+	/* Disable all interrupts */
+	__disable_irq();
+	/* Disable Systick timer */
 	SysTick->CTRL = 0;
-	SysTick->LOAD = 0;
-	SysTick->VAL = 0;
-
-	/* Note: If the ROM bootloader fails to enumerate via USB, you may also
-	 * need to reset the clock tree here (e.g., calling HAL_RCC_DeInit())
-	 * so the bootloader starts with a clean slate. */
-
-	/* 3. Initialize the Stack Pointer to the bootloader's MSP */
-	__set_MSP(*(__IO uint32_t *)STM32H5_ROM_BOOTLOADER_ADDR);
-
-	/* 4. Jump to ROM bootloader */
-	bootloader_jump();
-
-	while (1) {
-		/* Should never reach here */
+	/* Set the clock to the default state */
+	//HAL_RCC_DeInit();
+	/* Clear Interrupt Enable Register & Interrupt Pending Register */
+	for (i=0;i<5;i++)
+	{
+		NVIC->ICER[i]=0xFFFFFFFF;
+		NVIC->ICPR[i]=0xFFFFFFFF;
+	}
+	/* Re-enable all interrupts */
+	__enable_irq();
+	/* Set up the jump to boot loader address + 4 */
+	SysMemBootJump = (void (*)(void)) (*((uint32_t *) ((BootAddr + 4))));
+	/* Set the main stack pointer to the boot loader stack */
+	__set_MSP(*(uint32_t *)BootAddr);
+	/* Call the function to jump to boot loader location */
+	SysMemBootJump();
+	/* Jump is done successfully */
+	while (1)
+	{
+		/* Code should never reach this loop */
 	}
 }
+
 
 /**
  * @brief Initialization function called by Zephyr during boot
@@ -73,7 +75,7 @@ static int mini_bootloader_init(void)
 		*backup_reg = 0x00000000;
 
 		/* Jump to ST System Memory */
-		jump_to_rom_bootloader();
+		JumpToBootloader();
 	} else {
 		/* * NORMAL BOOT: Write magic number and start the countdown
 		 */
