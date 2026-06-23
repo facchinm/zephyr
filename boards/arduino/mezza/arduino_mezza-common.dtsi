@@ -160,13 +160,13 @@ zephyr_udc1: &usb {
 	status = "okay";
 };
 
-/*
 &ucpd1 {
 	status = "okay";
-	pinctrl-0 = <&ucpd1_cc1_pb13 &ucpd1_cc2_pa14>;
+	psc-ucpdclk = <2>;
+	hbitclkdiv = <14>;
+	pinctrl-0 = <&ucpd1_cc1_pb13 &ucpd1_cc2_pb14>;
 	pinctrl-names = "default";
 };
-*/
 
 /*
  * ------------------------------- CLOCKS
