@@ -22,5 +22,8 @@
 		gpios = <6 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
+};
 
+&st67w611m1 {
+    status = "disabled";
 };

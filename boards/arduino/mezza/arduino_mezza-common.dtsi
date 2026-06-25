@@ -240,10 +240,20 @@ stm32_lp_tick_source: &lptim4 {
 
 /* spi to radio controller */
 &spi1 {
-	pinctrl-0 = <&spi1_sck_pa5 &spi1_miso_pa6 &spi1_mosi_pa7 &spi1_nss_pa4>;
+	pinctrl-0 = <&spi1_sck_pa5 &spi1_miso_pa6 &spi1_mosi_pa7>;
 	pinctrl-names = "default";
-	/*cs-gpios = <&gpiob 12 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;*/
-	status = "okay";
+	/*cs-gpios = <&gpioa 4 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;*/
+	status = "disabled";
+
+	st67w611m1: st67w611m1@0 {
+		status = "disabled";
+		compatible = "st,st67w611m1";
+		reg = <0>;
+		spi-max-frequency = <DT_FREQ_M(40)>;
+		chip-select-gpios = <&gpioa 4 GPIO_ACTIVE_HIGH>;
+		ready-gpios = <&gpiob 9 GPIO_ACTIVE_HIGH>;
+		chip-en-gpios = <&gpioi 6 GPIO_ACTIVE_HIGH>;
+	};
 };
 
 /* to mezza1 but unused */
@@ -386,12 +396,15 @@ stm32_lp_tick_source: &lptim4 {
 	pinctrl-0 = <&eth_rmii_ref_clk_pa1
 		     &eth_rmii_rxd0_pe4
 		     &eth_rmii_rxd1_pe5
+		     &eth_rmii_crs_dv_pd1
 		     &eth_mii_rx_er_pi10
 		     &eth_rmii_tx_en_pg11
 		     &eth_rmii_txd0_pg13
 		     &eth_rmii_txd1_pg14>;
 	pinctrl-names = "default";
 	phy-connection-type = "rmii";
+	/* TODO: get mac address from unique serial number */
+	zephyr,random-mac-address;
 	phy-handle = <&phy0>;
 	status = "okay";
 };
@@ -405,9 +418,9 @@ stm32_lp_tick_source: &lptim4 {
 	phy0: ethernet-phy@0 {
 		compatible = "microchip,ksz8081";
 		reg = <0>;
-		microchip,interface-type = "rmii";
+		microchip,interface-type = "rmii-25MHz";
 		reset-gpios = <&gpiod 3 GPIO_ACTIVE_LOW>;
-		int-gpios = <&gpioj 12 GPIO_ACTIVE_LOW>;
+		int-gpios = <&gpioj 12 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 		status = "okay";
 	};
 };
@@ -447,3 +460,6 @@ stm32_lp_tick_source: &lptim4 {
 	status = "okay";
 };
 
+&gpioj {
+	status = "okay";
+};

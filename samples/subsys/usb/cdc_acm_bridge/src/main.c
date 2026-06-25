@@ -83,9 +83,13 @@ int main(void)
 
 	gpio_pin_configure_dt(&wifi_en, GPIO_OUTPUT);
 	gpio_pin_configure_dt(&wifi_boot, GPIO_OUTPUT);
+	printk("Wi-Fi GPIOs configured, boot=%d, en=%d\n", wifi_boot.pin, wifi_en.pin);
 	gpio_pin_set_dt(&wifi_boot, 1);
 	gpio_pin_set_dt(&wifi_en, 0);
+	k_sleep(K_MSEC(100));
 	gpio_pin_set_dt(&wifi_en, 1);
+	k_sleep(K_MSEC(100));
+	printk("Wi-Fi GPIOs configured done\n");
 #endif
 
 	sample_usbd = sample_usbd_init_device(sample_msg_cb);

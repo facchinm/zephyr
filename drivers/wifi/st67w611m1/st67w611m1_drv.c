@@ -696,6 +696,7 @@ static void st67_init_work(struct k_work *work)
 		SETUP_CMD("AT+CIPSTAMAC?\r\n", "+CIPSTAMAC:", on_cmd_cipstamac, 1U, ""),
 		SETUP_CMD_NOHANDLE(ST67W611M1_CWLAPOPT_CMD),
 		SETUP_CMD("AT+CWNETMODE?\r\n", "+CWNETMODE:", on_cmd_cwnetmode, 1U, ""),
+		SETUP_CMD_NOHANDLE("AT+CWMODE=1\r\n"),
 	};
 	ret = modem_cmd_handler_setup_cmds(
 		&st67_data->mctx.iface, &st67_data->mctx.cmd_handler, cmds, ARRAY_SIZE(cmds),
