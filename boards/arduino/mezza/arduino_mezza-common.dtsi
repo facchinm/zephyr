@@ -177,6 +177,10 @@ zephyr_udc1: &usb {
 	status = "okay";
 };
 
+&clk_hsi {
+	status = "okay";
+};
+
 &clk_hsi48 {
 	status = "okay";
 };
@@ -265,19 +269,24 @@ stm32_lp_tick_source: &lptim4 {
 
 /* SD card */
 &spi4 {
-	pinctrl-0 = <&spi4_sck_pe12 &spi4_miso_pe13 &spi4_mosi_pe14>;
+	pinctrl-0 = <&spi4_sck_pe12 &spi4_miso_pe13 &spi4_mosi_pe14 &spi4_nss_pe11>;
 	pinctrl-names = "default";
-	cs-gpios = <&gpioe 11 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
 	status = "okay";
+	clocks = <&rcc STM32_CLOCK(APB2, 19)>,
+			 <&rcc STM32_SRC_HSI SPI4_SEL(3)>;
 
 	sdhc0: sdhc@0 {
 		compatible = "zephyr,sdhc-spi-slot";
 		reg = <0>;
-		spi-max-frequency = <24000000>;
-
-		cd-gpios = <&gpioe 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
-
 		status = "okay";
+		cd-gpios = <&gpioe 1 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
+		spi-max-frequency = <12000000>;
+
+		mmc {
+			compatible = "zephyr,sdmmc-disk";
+			disk-name = "SD";
+			status = "okay";
+		};
 	};
 };
 
