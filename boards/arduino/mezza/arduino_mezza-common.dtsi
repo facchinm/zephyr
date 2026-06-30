@@ -333,6 +333,12 @@ stm32_lp_tick_source: &lptim4 {
 	pinctrl-names = "default";
 	current-speed = <9600>;
 	status = "okay";
+	modbus0 {
+		compatible = "zephyr,modbus-serial";
+		status = "okay";
+		de-gpios = <&gpiof 8 GPIO_ACTIVE_HIGH>;
+		re-gpios = <&gpiof 9 GPIO_ACTIVE_LOW>;
+	};
 };
 
 /* modem */
@@ -361,7 +367,7 @@ stm32_lp_tick_source: &lptim4 {
 	#size-cells = <0>;
 
 	/* Define the actual channels you are reading */
-	channel@1 {
+	channel@2 {
 		reg = <2>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
@@ -369,7 +375,7 @@ stm32_lp_tick_source: &lptim4 {
 		zephyr,resolution = <12>;
 	};
 
-	channel@2 {
+	channel@6 {
 		reg = <6>;
 		zephyr,gain = "ADC_GAIN_1";
 		zephyr,reference = "ADC_REF_INTERNAL";
