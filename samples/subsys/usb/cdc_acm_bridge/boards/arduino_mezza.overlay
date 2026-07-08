@@ -15,13 +15,20 @@
         gpio-hog;
 		gpios = <11 GPIO_ACTIVE_HIGH>;
 		status = "okay";
+		output-low;
 	};
 
     wifi_chip_en_gpio: wifi-chip-en-gpio {
         gpio-hog;
 		gpios = <6 GPIO_ACTIVE_HIGH>;
 		status = "okay";
+		output-low;
 	};
+};
+
+&uart9 {
+	current-speed = <115200>;
+	fifo-enable;
 };
 
 &st67w611m1 {

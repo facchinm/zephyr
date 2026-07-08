@@ -10,6 +10,7 @@
 #include <zephyr/device.h>
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/drivers/uart/uart_bridge.h>
+#include <zephyr/drivers/uart.h>
 #include <zephyr/kernel.h>
 
 #include <zephyr/usb/usb_device.h>
@@ -81,14 +82,9 @@ int main(void)
 		return -ENODEV;
 	}
 
-	gpio_pin_configure_dt(&wifi_en, GPIO_OUTPUT);
-	gpio_pin_configure_dt(&wifi_boot, GPIO_OUTPUT);
+	//gpio_pin_configure_dt(&wifi_en, GPIO_OUTPUT);
+	//gpio_pin_configure_dt(&wifi_boot, GPIO_OUTPUT);
 	printk("Wi-Fi GPIOs configured, boot=%d, en=%d\n", wifi_boot.pin, wifi_en.pin);
-	gpio_pin_set_dt(&wifi_boot, 1);
-	gpio_pin_set_dt(&wifi_en, 0);
-	k_sleep(K_MSEC(100));
-	gpio_pin_set_dt(&wifi_en, 1);
-	k_sleep(K_MSEC(100));
 	printk("Wi-Fi GPIOs configured done\n");
 #endif
 
@@ -105,6 +101,18 @@ int main(void)
 			return err;
 		}
 	}
+
+	const struct gpio_dt_spec button = GPIO_DT_SPEC_GET(DT_ALIAS(button), gpios);
+	gpio_pin_configure_dt(&button, GPIO_INPUT);
+	if (gpio_pin_get_dt(&button) == 1) {
+		gpio_pin_set_dt(&wifi_boot, 1);
+	}
+
+	uint32_t dtr = 0U;
+	while (dtr == 0U) {
+		uart_line_ctrl_get(uart_dev, UART_LINE_CTRL_DTR, &dtr);
+	}
+	gpio_pin_set_dt(&wifi_en, 1);
 
 	LOG_INF("USB device support enabled");
 
