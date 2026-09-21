@@ -187,7 +187,15 @@ static int stm32_dma_init(const struct device *dev)
 	hdma.Init.Priority		= DMA_PRIORITY_HIGH;
 	hdma.Instance			= STM32_DMA_GET_INSTANCE(dma->reg, dma->channel);
 #if defined(CONFIG_SOC_SERIES_STM32F7X) || defined(CONFIG_SOC_SERIES_STM32H7X)
-	hdma.Init.FIFOMode		= DMA_FIFOMODE_DISABLE;
+	hdma.Init.FIFOThreshold		= STM32_DMA_FEATURES_FIFO_THRESHOLD(
+						DT_INST_DMAS_CELL_BY_IDX(0, 0, features));
+	if (hdma.Init.FIFOThreshold == DMA_FIFO_THRESHOLD_FULL) {
+		hdma.Init.FIFOMode	= DMA_FIFOMODE_ENABLE;
+		hdma.Init.MemBurst	= DMA_MBURST_INC4;
+		hdma.Init.PeriphBurst	= DMA_PBURST_SINGLE;
+	} else {
+		hdma.Init.FIFOMode	= DMA_FIFOMODE_DISABLE;
+	}
 #endif
 #endif
 
